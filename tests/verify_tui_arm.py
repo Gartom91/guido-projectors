@@ -1,5 +1,6 @@
 """Verify image-installed ARM TUI and unit/sudoers files under QEMU, without hardware."""
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -25,16 +26,15 @@ def main():
     if os.geteuid() != 0 or not (ROOT / "usr/bin/qemu-arm-static").exists():
         raise RuntimeError("Requires root and the existing isolated QEMU rootfs")
     manifest = json.loads((REPO / "output/image-manifest.json").read_text())
-    if manifest["version"] != "1.1.0":
-        raise ValueError("Build image 1.1.0 first")
     for destination, metadata in manifest["files"].items():
         path = ROOT / destination.lstrip("/")
         if not path.parent.resolve().is_relative_to(ROOT):
             raise ValueError("Unsafe extraction path")
         path.parent.mkdir(parents=True, exist_ok=True)
-        if path.is_symlink():
-            path.unlink()
+        path.unlink(missing_ok=True)
         run("debugfs", "-R", f'dump {destination} "{path}"', "/tmp/guido-image-build/root.img", capture_output=True)
+        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != metadata["sha256"]:
+            raise ValueError(f"Image extraction failed: {destination}")
         path.chmod(int(metadata["mode"], 8))
     for unit in ("userconfig.service", "getty@tty1.service"):
         mask = ROOT / "etc/systemd/system" / unit
@@ -92,7 +92,7 @@ def main():
         assert result["config"]["dell"][0]["name"] == "Sala ARM"
         assert result["config"]["startup"] == "preserve"
         assert set(result["actions"]) == {"status"}
-        result = {"ok": True, "arm_curses_terminal": True, "linux_f2": True,
+        result = {"ok": True, "image_version": manifest["version"], "arm_curses_terminal": True, "linux_f2": True,
                   "unicode_ui": True, "unit_verification": verification.strip() or "passed",
                   "sudoers_verification": sudoers.strip()}
         (output / "tui-arm-verification.json").write_text(json.dumps(result, indent=2))

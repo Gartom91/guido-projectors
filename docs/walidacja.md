@@ -1,13 +1,15 @@
-# Walidacja wydania 1.1.0
+# Walidacja wydania 1.2.0
+
+Wydanie 1.2.0 rozszerza wspólny obraz i katalog instalatora o RPi 5. Zachowuje bazę Raspberry Pi OS Lite Trixie 2026-09-15, dotychczasową konfigurację usług i sprawdzoną aplikację PC 1.1.2. Poniżej ujęto bieżące kontrole obrazu i testy funkcji aplikacji wykonane także w poprzednich wydaniach; testy emulatora nie potwierdzają fizycznego rozruchu RPi 5.
 
 ## Potwierdzone
 
 - Suma SHA256 pobranego oficjalnego obrazu `.img.xz` oraz rozpakowanego `.img` zgadza się z katalogiem Raspberry Pi.
-- W obrazie są pliki firmware/DTB dla RPi 3B i 4B. Partycje i firmware zachowano z oficjalnej bazy.
+- W obrazie są pliki DTB dla RPi 3B, 4B i trzech rewizji RPi 5 oraz `kernel7.img`, `kernel8.img` i odpowiadające im initramfs. Kontrola budowania odczytuje te pliki z gotowego obrazu i sprawdza nagłówki DTB. SHA256 całej partycji startowej jest identyczne z oficjalną bazą; kontrolowane pliki i ich sumy są zapisane w manifeście.
 - Każdy dodany plik jest ponownie odczytywany z rootfs i porównywany po SHA256. Manifest zapisuje sumy i tryby dostępu.
-- Sumy gotowego wydania 1.1.0 znajdują się w `output/SHA256SUMS.txt` i `output/image-manifest.json`. Poprzedni obraz 1.0.0 nie zawiera pełnego TUI.
+- Sumy gotowego wydania 1.2.0 znajdują się w `output/SHA256SUMS.txt` i `output/image-manifest.json`. Poprzedni obraz 1.0.0 nie zawiera pełnego TUI.
 - `e2fsck -f -n` dla zmodyfikowanej partycji rootfs przechodzi wszystkie pięć etapów kontroli.
-- Testy `pytest`: 38 zaliczonych. Obejmują protokoły, rekonfigurację i awarie z wydania 1.0.0 oraz rzeczywisty terminal curses: nawigację, zmianę rozmiaru okna, anulowanie, zapis nazwy z polskimi znakami, pierwszy kreator bez ON/OFF, ochronę przed nadpisaniem konfiguracji innej sesji, warunki autostartu SSH, blokadę prawdziwych urządzeń/zewnętrznych adresów w emulatorze, zamykanie jego zasobów i odrzucenie drugiej instancji.
+- Testy `pytest`: 43 zaliczone. Obejmują protokoły, rekonfigurację i awarie z wydania 1.0.0 oraz rzeczywisty terminal curses: nawigację, zmianę rozmiaru okna, anulowanie, zapis nazwy z polskimi znakami, pierwszy kreator bez ON/OFF, ochronę przed nadpisaniem konfiguracji innej sesji, warunki autostartu SSH, blokadę prawdziwych urządzeń/zewnętrznych adresów w emulatorze, zamykanie jego zasobów i odrzucenie drugiej instancji. Nowe testy kontrolują zakres sumy partycji startowej oraz odrzucenie uciętego obrazu i nieprawidłowych zakresów.
 - Aplikacja Windows: `dotnet build` bez błędów i ostrzeżeń, `dotnet publish` tworzy samodzielny EXE. Wykonano również `dotnet test`; projekt WinForms nie zawiera adaptera testów .NET, więc właściwe testy komunikacji realizują tryby `--self-test` i `--integration-test`.
 - `--self-test`: połączenie TLS z przypiętym certyfikatem, kodowanie żądania i odpowiedzi, odrzucenie niepełnych danych dostępu.
 - Faktyczny opublikowany EXE Windows połączył się z odbiornikiem pracującym na Pythonie ARM 3.13.5 i OpenSSL 3.5.7 z obrazu, uruchomionym pod QEMU. Odczyt stanu, ON oraz OFF obsłużyły dwa oddzielne symulowane porty RS232 i UDP Casio. W tym teście działał rzeczywisty odstęp 5 s po ON.
@@ -21,7 +23,7 @@
 
 ## Instalator Windows i publikacja
 
-- Instalator sprawdzono na Windows PowerShell 5.1: 30 asercji dotyczących dozwolonych adresów HTTPS, długości/SHA256, pamięci pobierania, ponowień po uszkodzeniu, nieużywania częściowych danych, zachowania istniejącego poprawnego pliku po błędzie, skrótów i pełnego przepływu samego pobierania z kontrolowanymi danymi.
+- Instalator sprawdzono na Windows PowerShell 5.1: 34 asercje dotyczące dozwolonych adresów HTTPS, długości/SHA256, pamięci pobierania, ponowień po uszkodzeniu, nieużywania częściowych danych, zachowania istniejącego poprawnego pliku po błędzie, skrótów i pełnego przepływu samego pobierania z kontrolowanymi danymi. Sprawdzono zgodność tagów modeli z filtrem systemu Imager, w tym `pi5-32bit`.
 - Osobno sprawdzane są rzeczywiste pobrania z opublikowanego GitHub Releases i zgodność katalogu Imager z oficjalnym schematem. Plik CMD zawiera cały kod instalatora; nie pobiera kolejnego skryptu do wykonania.
 - Instalator sam pobiera obraz, EXE i dokumentację. Fizyczny zapis, wskazanie nośnika i potwierdzenie wymazania wykonuje użytkownik w Raspberry Pi Imager.
 - Test CMD uruchomionego z PowerShell 7 wykrył konflikt odziedziczonych ścieżek modułów z Windows PowerShell 5.1. Poprawka 1.1.1 ustawia standardową ścieżkę modułów tylko wewnątrz procesu CMD (`setlocal`) i oblicza SHA256 strumieniowo przez .NET. Obraz i aplikacja PC pozostają w wersji 1.1.0.
@@ -30,7 +32,7 @@
 
 ## Ograniczenia wymagające testu w instalacji
 
-Nie wykonano fizycznego startu RPi 3B/4B ani testu na prawdziwych konwerterach, projektorach i CueServer. Test ARM jest emulacją aplikacji, a nie rozruchem całego urządzenia. TUI sprawdzono w terminalach testowych, a logikę autostartu SSH ze stubem sudo. Fizyczny ekran/klawiatura, pierwszy kreator konta, uruchomienie panelu przez PID 1 na tty1, DHCP/Wi-Fi, powiększenie partycji oraz rzeczywiste logowanie SSH wymagają odbioru na RPi 4.
+Nie wykonano fizycznego startu RPi 3B/4B/5 ani testu na prawdziwych konwerterach, projektorach i CueServer. Test ARM jest emulacją aplikacji, a nie rozruchem całego urządzenia. TUI sprawdzono w terminalach testowych, a logikę autostartu SSH ze stubem sudo. Fizyczny ekran/klawiatura, pierwszy kreator konta, uruchomienie panelu przez PID 1 na tty1, DHCP/Wi-Fi, powiększenie partycji oraz rzeczywiste logowanie SSH wymagają odbioru na używanym modelu RPi.
 
 Datagramy Casio zostały odebrane i porównane bajt po bajcie w symulacji ARM/Linux. Test UDP Windows→WSL zakończył się timeoutem odbioru mimo udanego przekazania datagramów do stosu sieciowego. Dalszy test na aktywnym odbiorniku Windows ujawnił utratę pierwszego z pięciu pakietów przy nowym porcie lokalnym; kolejna seria na tym samym porcie odebrała wszystkie pięć oryginalnych komend POŻAR/Zasilanie w prawidłowej kolejności i treści. Niezależny pakiet kontrolny Pythona został odebrany. Przyczyna utraty pierwszego pakietu nie została ustalona; nie zmieniano reguł bezpieczeństwa. Zachowanie UDP na tym hoście nie jest w pełni potwierdzone. Te przyciski wymagają testu na docelowym PC i urządzeniach.
 
@@ -42,8 +44,8 @@ Po zbudowaniu obrazu rozpakuj jego rootfs do `/tmp/guido-image-build/rootfs` prz
 
 ```text
 python3 -m pytest tests -q
-sudo python3 tests/integration_arm_pc.py
 sudo python3 tests/verify_tui_arm.py
+sudo python3 tests/integration_arm_pc.py --pc-dir output/pc
 ```
 
 Skrypt korzysta wyłącznie z PTY i lokalnego symulatora CueServer. Tymczasowe bind-mounty są tworzone we wskazanym katalogu testowym i usuwane po teście; proces ARM jest zatrzymywany. Tryb `--pc-udp` dodatkowo sprawdza odbiór pięciu oryginalnych komend UDP z Windows i na tym hoście ujawnił opisane ograniczenie.

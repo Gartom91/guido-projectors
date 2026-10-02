@@ -1,8 +1,8 @@
-# Instalacja — RPi 3B / RPi 4B
+# Instalacja — RPi 3B / RPi 4B / RPi 5
 
 ## Pliki
 
-- `guido-projectory-rpi3-rpi4-1.1.0.img.xz`: obraz dla obu modeli, z pełnym TUI, bez środowiska graficznego.
+- `guido-projectory-rpi3-rpi4-rpi5-1.2.0.img.xz`: wspólny obraz dla wszystkich trzech modeli, z pełnym TUI, bez środowiska graficznego.
 - `pc/ShadokProjektory-RPi.exe`: aplikacja Windows 10/11 x64; nie wymaga instalacji .NET.
 - `SHA256SUMS.txt` i `image-manifest.json`: kontrola integralności wydania.
 
@@ -64,7 +64,7 @@ WDARCIE WODY steruje wszystkimi projektorami włączonymi w konfiguracji RPi. St
 
 W razie błędu jednego Della pozostałe urządzenia są obsługiwane niezależnie. Program pokazuje wyniki oddzielnie; działanie grupy nie jest transakcją „wszystko albo nic”. Nie ponawiaj OFF/ON automatycznie po timeout bez sprawdzenia stanu.
 
-## Test odbiorczy na RPi 4
+## Test odbiorczy na RPi 3B / 4B / 5
 
 1. Start bez konwerterów: kreator i konsola muszą działać. Nie oczekuj potwierdzonej komunikacji z Dellami bez podłączonych projektorów.
 2. Podłącz konwertery, przypisz stabilne ścieżki i odczytaj stan Dell 1/Dell 2 w terminalu.
@@ -74,4 +74,4 @@ W razie błędu jednego Della pozostałe urządzenia są obsługiwane niezależn
 6. Uruchom ponownie RPi z `startup=preserve`: nie powinno być komend ON/OFF w logach startu.
 7. Odłącz i podłącz konwerter. Po upływie ustawionego czasu ponownego podłączenia odczyt stanu ma wrócić.
 
-Ten sam plik obrazu służy do wgrania RPi 3B. Przy zmianie modelu i portu USB ścieżki `by-path` mogą się różnić; trzeba je ponownie przypisać.
+Ten sam plik obrazu służy do wgrania RPi 3B, 4B i 5. Przy zmianie modelu i portu USB ścieżki `by-path` mogą się różnić; trzeba je ponownie przypisać. RPi 5 korzysta z oficjalnego jądra 64-bit i aplikacji armhf; nie wymaga osobnego obrazu ani ręcznej zmiany `config.txt`. Nie wykonano jeszcze fizycznego testu rozruchu na żadnym z tych modeli; wymagany jest opisany odbiór sprzętowy.

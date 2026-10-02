@@ -13,7 +13,14 @@ import subprocess
 BASE_URL = "https://downloads.raspberrypi.com/raspios_lite_armhf/images/raspios_lite_armhf-2026-09-15/2026-09-15-raspios-trixie-armhf-lite.img.xz"
 BASE_XZ_SHA256 = "c766b3fb279b95c12cb4dd22d06f8eab31972c372675d05bd0ca95b060523a7f"
 BASE_IMG_SHA256 = "f6154846c674d27f61f2d91704783f105f2a8d1e40944126ca6d7f60d10644f1"
-VERSION = "1.1.0"
+VERSION = "1.2.0"
+SUPPORTED_BOARDS = ["Raspberry Pi 3B", "Raspberry Pi 4B", "Raspberry Pi 5"]
+BOOT_FILES = (
+    "config.txt", "cmdline.txt",
+    "bcm2710-rpi-3-b.dtb", "bcm2711-rpi-4-b.dtb",
+    "bcm2712-rpi-5-b.dtb", "bcm2712-d-rpi-5-b.dtb", "bcm2712d0-rpi-5-b.dtb",
+    "kernel7.img", "initramfs7", "kernel8.img", "initramfs8",
+)
 
 
 def run(*args, **kwargs):
@@ -23,6 +30,23 @@ def run(*args, **kwargs):
 def digest(path):
     with path.open("rb") as file:
         return hashlib.file_digest(file, "sha256").hexdigest()
+
+
+def region_digest(path, offset, size):
+    """Hash a complete partition, rejecting truncated images."""
+    if offset < 0 or size <= 0:
+        raise ValueError("Invalid partition range")
+    result = hashlib.sha256()
+    with path.open("rb") as source:
+        source.seek(offset)
+        remaining = size
+        while remaining:
+            chunk = source.read(min(8 * 1024 * 1024, remaining))
+            if not chunk:
+                raise ValueError("Truncated partition")
+            result.update(chunk)
+            remaining -= len(chunk)
+    return result.hexdigest()
 
 
 def main():
@@ -113,21 +137,35 @@ def main():
         if not check.exists() or digest(check) != metadata["sha256"]:
             raise ValueError(f"Blad instalacji pliku {destination}; sprawdz debugfs.log")
     run("e2fsck", "-f", "-n", str(root))
-    image = build / f"guido-projectory-rpi3-rpi4-{VERSION}.img"
+    image = build / f"guido-projectory-rpi3-rpi4-rpi5-{VERSION}.img"
     shutil.copyfile(base, image)
     with image.open("r+b") as target, root.open("rb") as source:
         target.seek(root_start)
         shutil.copyfileobj(source, target, length=8 * 1024 * 1024)
         target.flush()
         os.fsync(target.fileno())
-    for board in ("bcm2710-rpi-3-b.dtb", "bcm2711-rpi-4-b.dtb"):
-        board_check = staging / board
-        board_check.unlink(missing_ok=True)
-        run("mcopy", "-i", f"{image}@@{parts[0][4] * 512}", f"::{board}", str(board_check))
+    boot_start, boot_size = parts[0][4] * 512, parts[0][5] * 512
+    boot_sha256 = region_digest(image, boot_start, boot_size)
+    if boot_sha256 != region_digest(base, boot_start, boot_size):
+        raise ValueError("Boot partition differs from the verified official base")
+    boot_files = {}
+    # Pi 5 uses the official kernel8 fallback when kernel_2712.img is absent.
+    # Keep the vendor's firmware, kernel selection and initramfs unchanged.
+    for name in BOOT_FILES:
+        check = staging / name
+        check.unlink(missing_ok=True)
+        run("mcopy", "-i", f"{image}@@{boot_start}", f"::{name}", str(check))
+        if not check.is_file() or not check.stat().st_size:
+            raise ValueError(f"Missing boot file: {name}")
+        if name.endswith(".dtb") and check.read_bytes()[:4] != b"\xd0\x0d\xfe\xed":
+            raise ValueError(f"Invalid device tree: {name}")
+        boot_files[name] = {"sha256": digest(check), "bytes": check.stat().st_size}
     metadata = {
         "version": VERSION, "base_url": BASE_URL, "base_xz_sha256": BASE_XZ_SHA256,
         "base_img_sha256": BASE_IMG_SHA256, "image_sha256": digest(image),
-        "image_bytes": image.stat().st_size, "supported_boards": ["Raspberry Pi 3B", "Raspberry Pi 4B"],
+        "image_bytes": image.stat().st_size, "image_filename": image.name + ".xz",
+        "supported_boards": SUPPORTED_BOARDS, "userspace_architecture": "armhf",
+        "boot_partition_sha256": boot_sha256, "boot_files": boot_files,
         "files": manifest,
     }
     if not args.skip_compression:

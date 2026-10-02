@@ -77,7 +77,12 @@ try {
     Assert-True ($catalog.os_list[0].init_format -eq 'none') 'Customization unexpectedly enabled'
     Assert-True ($catalog.os_list[0].extract_sha256 -eq $Release.image.extract_sha256) 'Uncompressed image hash not passed to Imager'
     Assert-True (([Uri]$catalog.os_list[0].url).LocalPath -eq $imagePath) 'File URI damaged spaces or symbols'
-    Assert-True ($catalog.imager.devices.Count -eq 2 -and $catalog.os_list[0].devices.Count -eq 2) 'Boards missing'
+    Assert-True ($catalog.imager.devices.Count -eq 3 -and $catalog.os_list[0].devices.Count -eq 3) 'Boards missing'
+    foreach ($board in $catalog.imager.devices) {
+        Assert-True ($board.tags.Count -eq 1 -and $catalog.os_list[0].devices -contains $board.tags[0]) 'OS hidden for a supported board'
+    }
+    $pi5 = @($catalog.imager.devices | Where-Object { $_.name -eq 'Raspberry Pi 5' })
+    Assert-True ($pi5.Count -eq 1 -and $pi5[0].tags[0] -eq 'pi5-32bit') 'Pi 5 requires the official armhf catalog tag'
 
     $shortcutPath = Join-Path $testDirectory 'test.lnk'
     New-GuidoShortcut $shortcutPath $env:ComSpec '/c exit 0'

@@ -12,27 +12,27 @@ $ErrorActionPreference = 'Stop'
 # BEGIN_RELEASE_JSON
 $script:Release = @'
 {
-  "version": "1.1.2",
+  "version": "1.2.0",
   "date": "2026-10-02",
   "image": {
-    "name": "guido-projectory-rpi3-rpi4-1.1.0.img.xz",
-    "sha256": "41b09ab3ce69637f2602381b12b785b85e73f712c2acdfed0432c3cf7fc1d6eb",
-    "bytes": 651941284,
+    "name": "guido-projectory-rpi3-rpi4-rpi5-1.2.0.img.xz",
+    "sha256": "1c83ca5aeac12c46e61dae7421964cb1b12f20d9d8a360790ac4a60c29968c90",
+    "bytes": 651941300,
     "extract_bytes": 2759852032,
-    "extract_sha256": "171d34a5ee2c24154ef6ad103aba20074831da8bc0580e0075b7cd4071c8feec",
-    "url": "https://github.com/Gartom91/guido-projectors/releases/download/v1.1.0/guido-projectory-rpi3-rpi4-1.1.0.img.xz"
+    "extract_sha256": "c1871ff960ad793a7165bb351e07685a9fae310a90d449e4c6523954cba6155c",
+    "url": "https://github.com/Gartom91/guido-projectors/releases/download/v1.2.0/guido-projectory-rpi3-rpi4-rpi5-1.2.0.img.xz"
   },
   "pc": {
     "name": "ShadokProjektory-RPi.exe",
     "sha256": "fb6a3c26f9134733d2229c9636026405922f99957fc38ce1175ebf045571f869",
     "bytes": 116103376,
-    "url": "https://github.com/Gartom91/guido-projectors/releases/download/v1.1.0/ShadokProjektory-RPi.exe"
+    "url": "https://github.com/Gartom91/guido-projectors/releases/download/v1.2.0/ShadokProjektory-RPi.exe"
   },
   "docs": {
     "name": "guido-dokumentacja.zip",
-    "sha256": "4b2801d636fbef9f97685b2e155b6a0476596385e68c506a30d696b9d99506c6",
-    "bytes": 20972,
-    "url": "https://github.com/Gartom91/guido-projectors/releases/download/v1.1.2/guido-dokumentacja.zip"
+    "sha256": "3d9f88b52bb957e819a1ac42a953d58897faff00f40610ff289225ac2dbc91b1",
+    "bytes": 21892,
+    "url": "https://github.com/Gartom91/guido-projectors/releases/download/v1.2.0/guido-dokumentacja.zip"
   },
   "imager": {
     "name": "imager-v2.0.11.1.exe",
@@ -123,19 +123,20 @@ function Write-ImagerCatalog([string]$Path, [string]$ImagePath) {
         imager = [ordered]@{
             devices = @(
                 @{ name = 'Raspberry Pi 3B'; description = 'Guido: Raspberry Pi 3 Model B'; tags = @('pi3-32bit'); matching_type = 'inclusive'; capabilities = @() },
-                @{ name = 'Raspberry Pi 4B'; description = 'Guido: Raspberry Pi 4 Model B'; tags = @('pi4-32bit'); matching_type = 'inclusive'; capabilities = @() }
+                @{ name = 'Raspberry Pi 4B'; description = 'Guido: Raspberry Pi 4 Model B'; tags = @('pi4-32bit'); matching_type = 'inclusive'; capabilities = @() },
+                @{ name = 'Raspberry Pi 5'; description = 'Guido: Raspberry Pi 5'; tags = @('pi5-32bit'); matching_type = 'inclusive'; capabilities = @() }
             )
         }
         os_list = @([ordered]@{
             name = "Guido $($script:Release.version) - projektory / TUI"
-            description = 'RPi 3B / 4B. Konto i SSH konfigurujesz po pierwszym starcie na monitorze.'
+            description = 'RPi 3B / 4B / 5. Konto i SSH konfigurujesz po pierwszym starcie na monitorze.'
             icon = 'https://downloads.raspberrypi.com/imager/icons/RPi_4.png'
             url = ([Uri][IO.Path]::GetFullPath($ImagePath)).AbsoluteUri
             extract_size = $image.extract_bytes
             extract_sha256 = $image.extract_sha256
             image_download_size = $image.bytes
             release_date = $script:Release.date
-            devices = @('pi3-32bit', 'pi4-32bit')
+            devices = @('pi3-32bit', 'pi4-32bit', 'pi5-32bit')
             init_format = 'none'
             capabilities = @()
         })
@@ -236,7 +237,7 @@ function Install-Guido {
         $imagerArguments = '--repo "' + $catalogPath + '"'
         New-GuidoShortcut (Join-Path $programs 'Przygotuj karte SD.lnk') $imager $imagerArguments
         Write-Host ''
-        Write-Host 'W Imager wybierz RPi 3B/4B, system GUIDO i wlasciwa karte SD 32 GB.' -ForegroundColor Yellow
+        Write-Host 'W Imager wybierz RPi 3B/4B/5, system GUIDO i wlasciwa karte SD 32 GB.' -ForegroundColor Yellow
         Write-Host 'Zapis WYMAZE zawartosc wybranej karty. Sprawdz jej nazwe i pojemnosc.' -ForegroundColor Yellow
         Write-Host 'Poczekaj na koniec zapisu i weryfikacji. Konfiguracja konta/SSH: pierwszy start RPi z HDMI i klawiatura.'
         Write-Host "Aplikacja PC jest w menu Start i na pulpicie. Dokumentacja: $directory\Dokumentacja"

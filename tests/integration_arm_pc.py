@@ -33,6 +33,7 @@ def winpath(path):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--rootfs", type=Path, default=Path("/tmp/guido-image-build/rootfs"))
+    parser.add_argument("--pc-dir", type=Path, default=REPO / "output/pc")
     parser.add_argument("--pc-udp", action="store_true", help="Also test Windows-to-WSL UDP delivery")
     args = parser.parse_args()
     rootfs = args.rootfs.resolve()
@@ -67,7 +68,7 @@ def main():
         destination = rootfs / "opt/guido-projectors" / source.relative_to(REPO / "rpi")
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source, destination)
-    exe = REPO / "output/pc/ShadokProjektory-RPi.exe"
+    exe = args.pc_dir.resolve() / "ShadokProjektory-RPi.exe"
     process = None
     mounts = []
     service_log = (temporary / "arm-service.log").open("w")

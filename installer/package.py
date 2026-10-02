@@ -10,7 +10,7 @@ import zipfile
 REPO = Path(__file__).resolve().parents[1]
 OUT = REPO / "output"
 PACKAGE = OUT / "installer"
-VERSION = "1.1.2"  # Installer/PC revision; the hardware image remains 1.1.0.
+VERSION = "1.2.0"
 
 
 def describe(path):
@@ -36,9 +36,12 @@ def main():
             entry.compress_type = zipfile.ZIP_DEFLATED
             entry.external_attr = 0o644 << 16
             archive.writestr(entry, path.read_bytes())
-    image = describe(OUT / f"guido-projectory-rpi3-rpi4-{image_version}.img.xz")
+    image = describe(OUT / image_manifest["image_filename"])
+    if (image["sha256"] != image_manifest["compressed_sha256"] or
+            image["bytes"] != image_manifest["compressed_bytes"]):
+        raise ValueError("Image does not match its build manifest")
     image.update(extract_bytes=image_manifest["image_bytes"], extract_sha256=image_manifest["image_sha256"])
-    # Reuse unchanged large artifacts from their original, verified image release.
+    # Publish the image and the verified PC binary together in the image release.
     image["url"] = f"https://github.com/Gartom91/guido-projectors/releases/download/v{image_version}/{image['name']}"
     pc_path = args.pc_dir / "ShadokProjektory-RPi.exe"
     pc = describe(pc_path)
