@@ -1,0 +1,25 @@
+[Unit]
+Description=Guido local first boot configuration
+After=systemd-user-sessions.service cloud-config.service NetworkManager.service
+Before=guido-console.service guido-projectors.service
+ConditionPathExists=!/etc/guido-projectors/onboarded
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/guido-projectors/guido.py firstboot
+StandardInput=tty
+StandardOutput=tty
+StandardError=tty
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+TTYVTDisallocate=yes
+TimeoutStartSec=infinity
+Restart=on-failure
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+Environment=LANG=C.UTF-8
+Environment=TERM=linux
+
+[Install]
+WantedBy=multi-user.target

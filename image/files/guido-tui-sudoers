@@ -1,0 +1,3 @@
+# An authenticated administrator may open the TUI without a second password.
+# Empty quoted arguments restrict this exception to the default UI entry point.
+%sudo ALL=(root) NOPASSWD: /usr/local/bin/guido-config ""

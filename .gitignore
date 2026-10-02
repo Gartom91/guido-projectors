@@ -1,0 +1,9 @@
+.tools/
+.build/
+tmp/
+output/
+**/__pycache__/
+.pytest_cache/
+**/bin/
+**/obj/
+docs/reference/

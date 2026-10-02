@@ -1,0 +1,26 @@
+[Unit]
+Description=Guido full-screen local console
+After=guido-firstboot.service guido-projectors.service
+Wants=guido-projectors.service
+ConditionPathExists=/etc/guido-projectors/onboarded
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/guido-config
+User=root
+StandardInput=tty
+StandardOutput=tty
+StandardError=tty
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+TTYVTDisallocate=yes
+Restart=always
+RestartSec=2
+TimeoutStopSec=5
+Environment=TERM=linux
+Environment=LANG=C.UTF-8
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
