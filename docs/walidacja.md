@@ -1,13 +1,13 @@
-# Walidacja wydania 1.2.0
+# Walidacja wydania 1.3.0
 
-Wydanie 1.2.0 rozszerza wspólny obraz i katalog instalatora o RPi 5. Zachowuje bazę Raspberry Pi OS Lite Trixie 2026-09-15, dotychczasową konfigurację usług i sprawdzoną aplikację PC 1.1.2. Poniżej ujęto bieżące kontrole obrazu i testy funkcji aplikacji wykonane także w poprzednich wydaniach; testy emulatora nie potwierdzają fizycznego rozruchu RPi 5.
+Wydanie 1.3.0 dodaje adres awaryjny Ethernet `192.168.0.1/24` po nieudanej 30-sekundowej próbie DHCP. Wspólny obraz obsługuje RPi 3B/4B/5 i korzysta z bazy Raspberry Pi OS Lite Trixie 2026-09-15 oraz sprawdzonej aplikacji PC 1.1.2. Poniżej ujęto bieżące kontrole obrazu i testy funkcji aplikacji wykonane także w poprzednich wydaniach; testy emulatora nie potwierdzają fizycznego rozruchu RPi.
 
 ## Potwierdzone
 
 - Suma SHA256 pobranego oficjalnego obrazu `.img.xz` oraz rozpakowanego `.img` zgadza się z katalogiem Raspberry Pi.
 - W obrazie są pliki DTB dla RPi 3B, 4B i trzech rewizji RPi 5 oraz `kernel7.img`, `kernel8.img` i odpowiadające im initramfs. Kontrola budowania odczytuje te pliki z gotowego obrazu i sprawdza nagłówki DTB. SHA256 całej partycji startowej jest identyczne z oficjalną bazą; kontrolowane pliki i ich sumy są zapisane w manifeście.
 - Każdy dodany plik jest ponownie odczytywany z rootfs i porównywany po SHA256. Manifest zapisuje sumy i tryby dostępu.
-- Sumy gotowego wydania 1.2.0 znajdują się w `output/SHA256SUMS.txt` i `output/image-manifest.json`. Poprzedni obraz 1.0.0 nie zawiera pełnego TUI.
+- Sumy gotowego wydania 1.3.0 znajdują się w `output/SHA256SUMS.txt` i `output/image-manifest.json`. Poprzedni obraz 1.0.0 nie zawiera pełnego TUI.
 - `e2fsck -f -n` dla zmodyfikowanej partycji rootfs przechodzi wszystkie pięć etapów kontroli.
 - Testy `pytest`: 43 zaliczone. Obejmują protokoły, rekonfigurację i awarie z wydania 1.0.0 oraz rzeczywisty terminal curses: nawigację, zmianę rozmiaru okna, anulowanie, zapis nazwy z polskimi znakami, pierwszy kreator bez ON/OFF, ochronę przed nadpisaniem konfiguracji innej sesji, warunki autostartu SSH, blokadę prawdziwych urządzeń/zewnętrznych adresów w emulatorze, zamykanie jego zasobów i odrzucenie drugiej instancji. Nowe testy kontrolują zakres sumy partycji startowej oraz odrzucenie uciętego obrazu i nieprawidłowych zakresów.
 - Aplikacja Windows: `dotnet build` bez błędów i ostrzeżeń, `dotnet publish` tworzy samodzielny EXE. Wykonano również `dotnet test`; projekt WinForms nie zawiera adaptera testów .NET, więc właściwe testy komunikacji realizują tryby `--self-test` i `--integration-test`.
@@ -20,6 +20,13 @@ Wydanie 1.2.0 rozszerza wspólny obraz i katalog instalatora o RPi 5. Zachowuje 
 - Gotowy emulator WSL2 uruchomił rzeczywisty odbiornik oraz dwa wirtualne porty RS232 i CueServer. Opublikowany EXE zaliczył status/ON/OFF przez TCP/TLS. Trzy natywne odbiorniki UDP Windows odebrały i porównały wszystkich 15 pakietów testowych. Odbiorniki wcześniej zweryfikowały swoje porty pakietem gotowości; wynik nie dowodzi rozwiązania wcześniejszej utraty pierwszego UDP w instalacji.
 - Ponownie zbudowano i opublikowano aplikację PC po dodaniu `--settings`. Test własny EXE sprawdza także oddzielny plik ustawień emulatora, bez nadpisania zwykłego profilu aplikacji.
 - Test interaktywny gotowego emulatora wykonał rzeczywiste ON i OFF z TUI przez lokalny socket odbiornika i wirtualne RS232/UDP. Sprawdzono również, że zamknięcie samego panelu nie zatrzymuje odbiornika. Wyniki są w `tmp/emulator/tui-verification.json`.
+
+## Adres awaryjny Ethernet
+
+- Zainstalowano dwa profile NetworkManagera z trybem 0600 i właścicielem root: fabryczne DHCP oraz awaryjny. Profil użytkownika z priorytetem 0 ma pierwszeństwo przed fabrycznymi.
+- Oba profile zaakceptował również rzeczywisty ARM `nmcli --offline` z gotowego rootfs obrazu, uruchomiony pod QEMU.
+- Test na rzeczywistym NetworkManagerze 1.52.1 w odizolowanym kontenerze i przestrzeni sieciowej sprawdza normalne DHCP, brak DHCP po włożeniu kabla, osiągalność `192.168.0.1/24` z klienta, brak bramy domyślnej, powrót do DHCP po ponownym starcie, stabilność aktywnego połączenia awaryjnego, odrzucenie zajętego adresu przez ARP oraz pierwszeństwo własnego profilu statycznego. [Odtworzenie testu](../tests/network/README.md).
+- RPi zawiera NetworkManager 1.52.1-1+rpt4; kontener testowy używa wersji Debian 1.52.1-1. Kontener nie jest rozruchem systemu RPi. Fizyczny Ethernet, pierwszy start i SSH wymagają testu sprzętowego. Pierwsze konto/hasło nadal tworzy kreator na lokalnym monitorze.
 
 ## Instalator Windows i publikacja
 

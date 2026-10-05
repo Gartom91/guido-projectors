@@ -13,7 +13,7 @@ import subprocess
 BASE_URL = "https://downloads.raspberrypi.com/raspios_lite_armhf/images/raspios_lite_armhf-2026-09-15/2026-09-15-raspios-trixie-armhf-lite.img.xz"
 BASE_XZ_SHA256 = "c766b3fb279b95c12cb4dd22d06f8eab31972c372675d05bd0ca95b060523a7f"
 BASE_IMG_SHA256 = "f6154846c674d27f61f2d91704783f105f2a8d1e40944126ca6d7f60d10644f1"
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 SUPPORTED_BOARDS = ["Raspberry Pi 3B", "Raspberry Pi 4B", "Raspberry Pi 5"]
 BOOT_FILES = (
     "config.txt", "cmdline.txt",
@@ -102,6 +102,8 @@ def main():
         "00-guido-password.conf": ("/etc/ssh/sshd_config.d/00-guido-password.conf", 0o644),
         "guido-welcome.sh": ("/etc/profile.d/guido-welcome.sh", 0o644),
         "guido-journal.conf": ("/etc/systemd/journald.conf.d/guido.conf", 0o644),
+        "guido-ethernet-dhcp.nmconnection": ("/etc/NetworkManager/system-connections/guido-ethernet-dhcp.nmconnection", 0o600),
+        "guido-ethernet-fallback.nmconnection": ("/etc/NetworkManager/system-connections/guido-ethernet-fallback.nmconnection", 0o600),
     }
     for name, (destination, mode) in mappings.items():
         files[destination] = (repo / "image" / "files" / name, mode)

@@ -8,7 +8,7 @@ Na Windows 10/11 x64 pobierz tylko [Install-Guido.cmd](https://github.com/Gartom
 
 Gotowe pliki są w [GitHub Releases](https://github.com/Gartom91/guido-projectors/releases/latest). Instrukcja ręczna:
 
-1. W Raspberry Pi Imager wybierz własny obraz `output/guido-projectory-rpi3-rpi4-rpi5-1.2.0.img.xz` i kartę 32 GB. Wskazana karta zostanie nadpisana.
+1. W Raspberry Pi Imager wybierz własny obraz `output/guido-projectory-rpi3-rpi4-rpi5-1.3.0.img.xz` i kartę 32 GB. Wskazana karta zostanie nadpisana.
 2. Pierwszy start wykonaj z monitorem HDMI i klawiaturą USB. Kreator ustawi konto, hasło SSH, porty Dell, adres CueServer i odbiornik sieciowy.
 3. Uruchom `output/pc/ShadokProjektory-RPi.exe`. W ustawieniach wpisz IP RPi, port, token i odcisk SHA256 certyfikatu wyświetlone na RPi.
 4. Pełne TUI otwiera się automatycznie na lokalnym monitorze bez logowania oraz po interaktywnym zalogowaniu administratora przez SSH. Ręczne uruchomienie: `sudo guido-config`.
@@ -16,6 +16,8 @@ Gotowe pliki są w [GitHub Releases](https://github.com/Gartom91/guido-projector
 TUI: strzałki i Enter wybierają opcję, Tab przechodzi między polami, Spacja zmienia wybór, F2 zatwierdza formularz, Esc anuluje. Minimum 80×24 znaków. Ekran stanu odświeża się bez wysyłania ON/OFF. Odbiornik działa niezależnie od panelu. Lokalny panel ma pełne uprawnienia administracyjne, zgodnie z wybranym trybem bez logowania; SSH nadal wymaga konta i hasła.
 
 Domyślny start systemu i restart usługi nie przełączają zasilania projektorów. Opcje `on` i `off` wykonują jednorazową próbę po starcie systemu; są wyraźnie konfigurowalne.
+
+Ethernet najpierw próbuje DHCP przez 30 s. Jeśli nie otrzyma adresu, uruchamia profil awaryjny `192.168.0.1/24`, bez bramy i DNS. Do bezpośredniego połączenia ustaw na PC `192.168.0.2`, maskę `255.255.255.0`, bez bramy i DNS. Własne profile sieciowe mają pierwszeństwo. Konto i hasło SSH tworzy pierwszy lokalny kreator. [Szczegóły i powrót do DHCP](docs/instalacja.md#sieć-bez-dhcp).
 
 ## Dokumentacja
 

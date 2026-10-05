@@ -10,7 +10,8 @@ import zipfile
 REPO = Path(__file__).resolve().parents[1]
 OUT = REPO / "output"
 PACKAGE = OUT / "installer"
-VERSION = "1.2.0"
+VERSION = "1.3.0"
+RELEASE_DATE = "2026-10-05"
 
 
 def describe(path):
@@ -32,7 +33,7 @@ def main():
     docs = PACKAGE / "guido-dokumentacja.zip"
     with zipfile.ZipFile(docs, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         for path in sorted([REPO / "README.md", REPO / "NOTICE.md", *REPO.glob("docs/*.md")]):
-            entry = zipfile.ZipInfo(path.relative_to(REPO).as_posix(), (2026, 10, 2, 0, 0, 0))
+            entry = zipfile.ZipInfo(path.relative_to(REPO).as_posix(), (*map(int, RELEASE_DATE.split("-")), 0, 0, 0))
             entry.compress_type = zipfile.ZIP_DEFLATED
             entry.external_attr = 0o644 << 16
             archive.writestr(entry, path.read_bytes())
@@ -52,7 +53,7 @@ def main():
     imager["url"] = "https://github.com/raspberrypi/rpi-imager/releases/download/v2.0.11.1/imager-v2.0.11.1.exe"
     if imager["sha256"] != "94ffded522f3e2a38bdb9505440229e1411b80992a616ba16b2d7e73bd794130":
         raise ValueError("Official Imager SHA256 mismatch")
-    release = {"version": version, "date": "2026-10-02", "image": image,
+    release = {"version": version, "date": RELEASE_DATE, "image": image,
                "pc": pc, "docs": docs_metadata, "imager": imager}
     source = REPO / "installer/Install-Guido.ps1"
     text = source.read_text(encoding="utf-8-sig")

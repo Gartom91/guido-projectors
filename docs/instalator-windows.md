@@ -9,7 +9,9 @@
 5. Uruchom RPi z kartą, HDMI i klawiaturą. Na RPi ustaw konto/hasło SSH oraz urządzenia. Konto, token i certyfikaty są indywidualne dla danej karty. Dane połączenia PC znajdziesz w TUI.
 6. Aplikację otworzysz skrótem **Projektory Shadok** na pulpicie lub w menu Start → **Guido Projektory**. Wpisz dane połączenia RPi. Skrót **Przygotuj kartę SD** ponownie otwiera Imager z pobranym obrazem.
 
-Na PC potrzebne jest ok. 1,5 GB wolnego miejsca. Instalator 1.2.0 pobiera wspólny obraz 1.2.0 dla RPi 3B/4B/5, sprawdzony EXE aplikacji PC 1.1.2 i dokumentację z wydania GitHub 1.2.0. Pliki trafiają do `%LOCALAPPDATA%\GuidoProjectors\1.2.0`. Wszystkie pola adresów nowej aplikacji PC są puste; konfigurujesz je sam. Istniejące prywatne ustawienia aplikacji w `%LOCALAPPDATA%\ShadokProjektory-RPi` pozostają zachowane. Instalator nie uruchamia aplikacji sterującej i nie wysyła komend do urządzeń.
+Na PC potrzebne jest ok. 1,5 GB wolnego miejsca. Instalator 1.3.0 pobiera wspólny obraz 1.3.0 dla RPi 3B/4B/5, sprawdzony EXE aplikacji PC 1.1.2 i dokumentację z wydania GitHub 1.3.0. Pliki trafiają do `%LOCALAPPDATA%\GuidoProjectors\1.3.0`. Wszystkie pola adresów nowej aplikacji PC są puste; konfigurujesz je sam. Istniejące prywatne ustawienia aplikacji w `%LOCALAPPDATA%\ShadokProjektory-RPi` pozostają zachowane. Instalator nie uruchamia aplikacji sterującej i nie wysyła komend do urządzeń.
+
+Obraz 1.3.0 po nieudanej 30-sekundowej próbie DHCP używa na Ethernet adresu awaryjnego `192.168.0.1/24`. Sposób ustawienia PC i wejścia przez SSH opisuje [instrukcja sieci bez DHCP](instalacja.md#sieć-bez-dhcp). Pierwsze konto/hasło nadal ustawia kreator na lokalnym monitorze.
 
 Pobrany skrypt działa bez logowania do GitHub; repozytorium i wydanie są publiczne. Windows może wyświetlić ostrzeżenie o pobranym pliku bez podpisu. Pobieraj go wyłącznie z podanego repozytorium. Skrypt nie zmienia globalnej polityki PowerShell, zapory ani ustawień SSH/sieci PC. Tryb emulatora jest osobnym, wcześniej przygotowanym środowiskiem i nie jest instalowany.
 

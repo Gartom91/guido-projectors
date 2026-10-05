@@ -28,6 +28,16 @@ Zmiany aplikacji są sprawdzane przed zapisem, a zapis jest atomowy. Ostatnie 10
 
 Zmiana IP aktywnego połączenia może zerwać SSH; konfiguruj ją na lokalnym monitorze.
 
+## Ethernet bez DHCP
+
+Profil **GUIDO Ethernet DHCP** na `eth0` próbuje uzyskać IPv4 przez 30 s. Gdy próba się nie powiedzie, profil **GUIDO Ethernet awaryjny** ustawia `192.168.0.1/24`, bez bramy i DNS. Na PC ustaw `192.168.0.2` i maskę `255.255.255.0`, bez bramy i DNS. Po utworzeniu własnego konta możesz wejść przez `ssh <konto>@192.168.0.1`; TUI otworzy się po zalogowaniu.
+
+Własne profile z domyślnym priorytetem 0 mają pierwszeństwo przed fabrycznymi (-100 dla DHCP, -999 dla adresu awaryjnego). Dodaj profil z autostartem w opcji sieciowej TUI albo edytuj **GUIDO Ethernet DHCP**. Wyłączenie autostartu profilu awaryjnego wyłącza tę funkcję.
+
+Jeśli DHCP wróci podczas pracy na IP awaryjnym, profil pozostaje aktywny, aby nie przerwać zdalnej administracji. DHCP można przywrócić ręcznie przez **Aktywuj połączenie → GUIDO Ethernet DHCP** w `nmtui` albo ponownie uruchomić RPi. Nowy adres odczytaj z routera lub lokalnego TUI.
+
+Adres awaryjny zostaje odrzucony, jeśli NetworkManager wykryje jego użycie przez inne urządzenie. Podłącz wtedy PC–RPi bezpośrednio lub ustaw inny adres z lokalnego TUI. Funkcja nie uruchamia serwera DHCP na RPi i nie konfiguruje automatycznie adresu PC ani Wi-Fi.
+
 ## Start i awarie
 
 - `preserve`: brak automatycznej komendy zasilania; konfiguracja domyślna.

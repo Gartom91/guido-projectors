@@ -1,0 +1,19 @@
+[connection]
+id=GUIDO Ethernet DHCP
+uuid=129d5482-67a2-414c-a5f7-e8de8e759d35
+type=ethernet
+interface-name=eth0
+autoconnect=true
+autoconnect-priority=-100
+autoconnect-retries=1
+
+[ethernet]
+
+[ipv4]
+method=auto
+dhcp-timeout=30
+may-fail=false
+
+[ipv6]
+method=auto
+may-fail=true

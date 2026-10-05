@@ -12,27 +12,27 @@ $ErrorActionPreference = 'Stop'
 # BEGIN_RELEASE_JSON
 $script:Release = @'
 {
-  "version": "1.2.0",
-  "date": "2026-10-02",
+  "version": "1.3.0",
+  "date": "2026-10-05",
   "image": {
-    "name": "guido-projectory-rpi3-rpi4-rpi5-1.2.0.img.xz",
-    "sha256": "1c83ca5aeac12c46e61dae7421964cb1b12f20d9d8a360790ac4a60c29968c90",
-    "bytes": 651941300,
+    "name": "guido-projectory-rpi3-rpi4-rpi5-1.3.0.img.xz",
+    "sha256": "220355fc52d5abd08de219fc7107428d385e1e77b2405b7bd694c20b449b2494",
+    "bytes": 651942172,
     "extract_bytes": 2759852032,
-    "extract_sha256": "c1871ff960ad793a7165bb351e07685a9fae310a90d449e4c6523954cba6155c",
-    "url": "https://github.com/Gartom91/guido-projectors/releases/download/v1.2.0/guido-projectory-rpi3-rpi4-rpi5-1.2.0.img.xz"
+    "extract_sha256": "49ef09439c9becd7805d69a5382b8df9985e950e73844537f3b4d5501d2f1d3a",
+    "url": "https://github.com/Gartom91/guido-projectors/releases/download/v1.3.0/guido-projectory-rpi3-rpi4-rpi5-1.3.0.img.xz"
   },
   "pc": {
     "name": "ShadokProjektory-RPi.exe",
     "sha256": "fb6a3c26f9134733d2229c9636026405922f99957fc38ce1175ebf045571f869",
     "bytes": 116103376,
-    "url": "https://github.com/Gartom91/guido-projectors/releases/download/v1.2.0/ShadokProjektory-RPi.exe"
+    "url": "https://github.com/Gartom91/guido-projectors/releases/download/v1.3.0/ShadokProjektory-RPi.exe"
   },
   "docs": {
     "name": "guido-dokumentacja.zip",
-    "sha256": "3d9f88b52bb957e819a1ac42a953d58897faff00f40610ff289225ac2dbc91b1",
-    "bytes": 21892,
-    "url": "https://github.com/Gartom91/guido-projectors/releases/download/v1.2.0/guido-dokumentacja.zip"
+    "sha256": "253baa7782455ad6b22e35f1a07698e77dda389c21eb07547526d56d8c7252e2",
+    "bytes": 24318,
+    "url": "https://github.com/Gartom91/guido-projectors/releases/download/v1.3.0/guido-dokumentacja.zip"
   },
   "imager": {
     "name": "imager-v2.0.11.1.exe",

@@ -1,0 +1,24 @@
+[connection]
+id=GUIDO Ethernet awaryjny
+uuid=a32b7538-c1c0-48be-96fa-75025373a2dc
+type=ethernet
+interface-name=eth0
+autoconnect=true
+autoconnect-priority=-999
+autoconnect-retries=1
+
+[ethernet]
+
+[ipv4]
+method=manual
+address1=192.168.0.1/24
+never-default=true
+may-fail=false
+dad-timeout=2000
+
+# Dynamic IPv6 keeps this profile from activating before Ethernet carrier exists.
+[ipv6]
+method=auto
+never-default=true
+ignore-auto-dns=true
+may-fail=true
